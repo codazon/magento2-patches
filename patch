@@ -1,0 +1,35 @@
+#!/usr/bin/env php
+<?php
+
+$dirName = __DIR__ . '/patches';
+$files = glob( $dirName . '/*.patch');
+sort($files);
+
+foreach ($files as $file) {
+    $cmd = 'git apply ' . $file;
+    execute($cmd);
+}
+
+echo("\r\nPatches done!\r\n");
+
+function execute($command)
+{
+    logger('Command:' . $command);
+    exec(
+        $command,
+        $output,
+        $status
+    );
+    logger('Status:' . var_export($status, true));
+    logger('Output:' . var_export($output, true));
+    if ($status != 0) {
+        logger("Command $command returned code $status");
+    }
+
+    return $output;
+}
+
+function logger($message)
+{
+    echo sprintf('[%s] %s', date("Y-m-d H:i:s"), $message) . PHP_EOL;
+}
